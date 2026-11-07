@@ -221,7 +221,7 @@ function App() {
             <Metric
               label="Manual handoff steps"
               value={3}
-              note="Export → upload → inspect · defined workflow"
+              note="Illustrative scenario: export, upload, inspect"
             />
           )}
         </section>
@@ -340,7 +340,7 @@ function App() {
                   <p>
                     {state.worker_enabled
                       ? "Worker checks the queue every 0.5 seconds."
-                      : "Test mode: use Process queue to advance deliveries."}
+                      : "Automatic worker paused; use Process queue to advance deliveries."}
                   </p>
                 </div>
               </div>
