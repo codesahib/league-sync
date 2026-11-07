@@ -1,0 +1,17 @@
+{
+  "mode": "baseline",
+  "seed_players": 20,
+  "transfers": 10,
+  "mismatches_before_delivery": 10,
+  "mismatches_after_replay": 10,
+  "league_records_after_replay": 30,
+  "transport_accepted_records": 40,
+  "correctly_reconciled_transfers": 0,
+  "manual_handoff_actions_per_transfer": 3,
+  "operator_action_trace": [
+    "export CSV",
+    "upload CSV",
+    "inspect reconciliation"
+  ],
+  "note": "Source transfer excluded. Correctness and CSV acceptance are separate metrics; no human timing measured."
+}
