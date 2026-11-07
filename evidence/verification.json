@@ -1,0 +1,41 @@
+{
+  "started_at_utc": "2026-11-07T04:19:15.974929+00:00",
+  "completed": true,
+  "platform": "Windows",
+  "python": "3.13.14",
+  "source_commit": "1979a30cd0f6f8897316103b0a0c2748f8099b84",
+  "ui": "chrome",
+  "checks": [
+    {
+      "command": "<repo>\\.venv\\Scripts\\python.exe -m pytest backend/tests -q --junitxml=evidence/backend-tests.xml",
+      "exit_code": 0,
+      "output": "........................                                                 [100%]\n============================== warnings summary ===============================\n.venv\\Lib\\site-packages\\starlette\\testclient.py:51\n  <repo>\\.venv\\Lib\\site-packages\\starlette\\testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.\n    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n- generated xml file: <repo>\\evidence\\backend-tests.xml -\n24 passed, 1 warning in 3.88s\n"
+    },
+    {
+      "command": "\"C:\\Program Files\\nodejs\\npm.cmd\" --prefix frontend run build",
+      "exit_code": 0,
+      "output": "\n> league-sync-lab@1.0.0 build\n> tsc -b && vite build\n\nvite v7.3.7 building client environment for production...\ntransforming...\n\u2713 1677 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   0.47 kB \u2502 gzip:  0.30 kB\ndist/assets/index-ooIfVOeP.css   11.02 kB \u2502 gzip:  3.19 kB\ndist/assets/index-CdKvyBcq.js   217.25 kB \u2502 gzip: 68.11 kB\n\u2713 built in 1.45s\n"
+    },
+    {
+      "command": "\"C:\\Program Files\\nodejs\\npm.cmd\" --prefix frontend run format:check",
+      "exit_code": 0,
+      "output": "\n> league-sync-lab@1.0.0 format:check\n> prettier --check src tests *.ts *.mjs *.json index.html\n\nChecking formatting...\nAll matched files use Prettier code style!\n"
+    },
+    {
+      "command": "\"C:\\Program Files\\nodejs\\npm.cmd\" --prefix frontend audit --audit-level=moderate",
+      "exit_code": 0,
+      "output": "found 0 vulnerabilities\n"
+    },
+    {
+      "command": "<repo>\\.venv\\Scripts\\python.exe scripts/benchmark.py --mode both",
+      "exit_code": 0,
+      "output": "{\n  \"method\": \"Fresh identical 20-player seeds; 10 fixed transfers; one full duplicate replay. Separate identical outage/retry/replay probe. No timings.\",\n  \"batch\": {\n    \"baseline\": {\n      \"mode\": \"baseline\",\n      \"seed_players\": 20,\n      \"transfers\": 10,\n      \"mismatches_before_delivery\": 10,\n      \"mismatches_after_replay\": 10,\n      \"league_records_after_replay\": 30,\n      \"transport_accepted_records\": 40,\n      \"correctly_reconciled_transfers\": 0,\n      \"manual_handoff_actions_per_transfer\": 3,\n      \"operator_action_trace\": [\n        \"export CSV\",\n        \"upload CSV\",\n        \"inspect reconciliation\"\n      ],\n      \"duplicate_events_ignored\": 0,\n      \"physical_delivery_unit\": \"CSV row\",\n      \"note\": \"Source transfer and one-time activation excluded. Process endpoint replaces worker ticks in the harness. Acceptance counts have different payload units; no human timing measured.\"\n    },\n    \"reliable\": {\n      \"mode\": \"reliable\",\n      \"seed_players\": 20,\n      \"transfers\": 10,\n      \"mismatches_before_delivery\": 10,\n      \"mismatches_after_replay\": 0,\n      \"league_records_after_replay\": 20,\n      \"transport_accepted_records\": 20,\n      \"correctly_reconciled_transfers\": 10,\n      \"manual_handoff_actions_per_transfer\": 0,\n      \"operator_action_trace\": [],\n      \"duplicate_events_ignored\": 10,\n      \"physical_delivery_unit\": \"versioned event\",\n      \"note\": \"Source transfer and one-time activation excluded. Process endpoint replaces worker ticks in the harness. Acceptance counts have different payload units; no human timing measured.\"\n    }\n  },\n  \"failure_probe\": {\n    \"baseline\": {\n      \"delivery_attempts\": 3,\n      \"accepted_deliveries\": 2,\n      \"injected_failures\": 1,\n      \"final_mismatches\": 1,\n      \"league_records\": 21,\n      \"durable_failure_audit_entries\": 0,\n      \"delivery_payload\": \"20-row CSV snapshot\"\n    },\n    \"reliable\": {\n      \"delivery_attempts\": 3,\n      \"accepted_deliveries\": 2,\n      \"injected_failures\": 1,\n      \"final_mismatches\": 0,\n      \"league_records\": 20,\n      \"durable_failure_audit_entries\": 1,\n      \"delivery_payload\": \"one immutable event\"\n    }\n  }\n}\n"
+    },
+    {
+      "command": "\"C:\\Program Files\\nodejs\\npm.cmd\" --prefix frontend run test:ui",
+      "exit_code": 0,
+      "output": "\n> league-sync-lab@1.0.0 test:ui\n> playwright test\n\n\u001b[2m[WebServer] \u001b[22mINFO:     Started server process [14488]\n\u001b[2m[WebServer] \u001b[22mINFO:     Waiting for application startup.\n\u001b[2m[WebServer] \u001b[22mINFO:     Application startup complete.\n\u001b[2m[WebServer] \u001b[22mINFO:     Uvicorn running on http://127.0.0.1:8011 (Press CTRL+C to quit)\n\u001b[2m[WebServer] \u001b[22m(node:26056) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n\u001b[2m[WebServer] \u001b[22m(Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 2 tests using 1 worker\n\n(node:21256) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:21256) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n  ok 1 tests\\smoke.spec.ts:15:1 \u203a baseline CSV handoff exposes a stale transfer (712ms)\n\n  ok 2 tests\\smoke.spec.ts:44:1 \u203a reliable transfer, failure retry, replay and conflict review (2.1s)\n\n  2 passed (6.1s)\n"
+    }
+  ],
+  "exit_code": 0
+}

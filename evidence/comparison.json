@@ -1,0 +1,59 @@
+{
+  "method": "Fresh identical 20-player seeds; 10 fixed transfers; one full duplicate replay. Separate identical outage/retry/replay probe. No timings.",
+  "batch": {
+    "baseline": {
+      "mode": "baseline",
+      "seed_players": 20,
+      "transfers": 10,
+      "mismatches_before_delivery": 10,
+      "mismatches_after_replay": 10,
+      "league_records_after_replay": 30,
+      "transport_accepted_records": 40,
+      "correctly_reconciled_transfers": 0,
+      "manual_handoff_actions_per_transfer": 3,
+      "operator_action_trace": [
+        "export CSV",
+        "upload CSV",
+        "inspect reconciliation"
+      ],
+      "duplicate_events_ignored": 0,
+      "physical_delivery_unit": "CSV row",
+      "note": "Source transfer and one-time activation excluded. Process endpoint replaces worker ticks in the harness. Acceptance counts have different payload units; no human timing measured."
+    },
+    "reliable": {
+      "mode": "reliable",
+      "seed_players": 20,
+      "transfers": 10,
+      "mismatches_before_delivery": 10,
+      "mismatches_after_replay": 0,
+      "league_records_after_replay": 20,
+      "transport_accepted_records": 20,
+      "correctly_reconciled_transfers": 10,
+      "manual_handoff_actions_per_transfer": 0,
+      "operator_action_trace": [],
+      "duplicate_events_ignored": 10,
+      "physical_delivery_unit": "versioned event",
+      "note": "Source transfer and one-time activation excluded. Process endpoint replaces worker ticks in the harness. Acceptance counts have different payload units; no human timing measured."
+    }
+  },
+  "failure_probe": {
+    "baseline": {
+      "delivery_attempts": 3,
+      "accepted_deliveries": 2,
+      "injected_failures": 1,
+      "final_mismatches": 1,
+      "league_records": 21,
+      "durable_failure_audit_entries": 0,
+      "delivery_payload": "20-row CSV snapshot"
+    },
+    "reliable": {
+      "delivery_attempts": 3,
+      "accepted_deliveries": 2,
+      "injected_failures": 1,
+      "final_mismatches": 0,
+      "league_records": 20,
+      "durable_failure_audit_entries": 1,
+      "delivery_payload": "one immutable event"
+    }
+  }
+}
