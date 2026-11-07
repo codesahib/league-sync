@@ -13,6 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main():
+    # Windows redirected consoles can default to cp1252; Vite prints Unicode.
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser()
     parser.add_argument("--browser-channel", help="Use installed chrome or msedge instead of bundled Chromium")
     parser.add_argument("--skip-ui", action="store_true", help="Explicitly report UI test as skipped")
@@ -35,7 +37,7 @@ def main():
     env["PYTHONIOENCODING"] = "utf-8"
     if args.browser_channel:
         env["PLAYWRIGHT_CHANNEL"] = args.browser_channel
-    report = {"started_at_utc": datetime.now(timezone.utc).isoformat(),
+    report = {"started_at_utc": datetime.now(timezone.utc).isoformat(), "completed": False,
               "platform": platform.system(), "python": platform.python_version(),
               "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
               "ui": "explicitly skipped" if args.skip_ui else args.browser_channel or "bundled chromium",
@@ -46,10 +48,13 @@ def main():
         result = subprocess.run(command, cwd=ROOT, env=env, text=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT, encoding="utf-8", errors="replace")
         output = result.stdout.replace(str(ROOT), "<repo>")
-        print(output, flush=True)
         report["checks"].append({"command": display, "exit_code": result.returncode, "output": output})
         (evidence / "verification.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    return int(any(check["exit_code"] for check in report["checks"]))
+        print(output, flush=True)
+    report["completed"] = True
+    report["exit_code"] = int(any(check["exit_code"] for check in report["checks"]))
+    (evidence / "verification.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    return report["exit_code"]
 
 
 if __name__ == "__main__":
