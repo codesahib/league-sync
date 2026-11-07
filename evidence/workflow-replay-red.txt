@@ -1,0 +1,21 @@
+Pre-fix regression against 00abbd0; sync implementation unchanged.
+Command: python -m pytest backend/tests/test_workflow.py::test_reported_replay_in_baseline_sequence_cannot_deadlock -q --tb=short
+Exit code: 1
+
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_reported_replay_in_baseline_sequence_cannot_deadlock __________
+backend\tests\test_workflow.py:27: in test_reported_replay_in_baseline_sequence_cannot_deadlock
+    assert replay.status_code == 409, (
+E   AssertionError: Replay returned 200; processing={'attempted': 0, 'delivered': 0, 'failed': 0, 'conflicts': 0}; reactivation=409 {'detail': 'Resolve or deliver outstanding jobs before changing workflow'}
+E   assert 200 == 409
+E    +  where 200 = <Response [200 OK]>.status_code
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:51
+  <repo>\.venv\Lib\site-packages\starlette\testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED backend/tests/test_workflow.py::test_reported_replay_in_baseline_sequence_cannot_deadlock
+1 failed, 1 warning in 0.16s

@@ -65,7 +65,7 @@ bash scripts/check.sh --browser-channel chrome
 
 The verifier records exit codes and returns nonzero on failure. `--skip-ui` explicitly reports a skipped UI test; it is not the full gate. Playwright owns ports **5183 / 8011** and resets **only `data/ui-test.sqlite3`** before each test. Benchmark databases are temporary files under this repository's `data/`; they do not alter the interactive demo. Tests generate PNG screenshots, JUnit XML and Playwright JSON in `evidence/`.
 
-Validation ran on Windows using `.venv/Scripts/python.exe` and `npm.cmd`; Ubuntu/WSL equivalents are documented here. Linux execution has not been measured. **30 backend tests and 2 UI tests passed**, as did typecheck/build and formatting. npm audit reported zero vulnerabilities. One upstream Starlette/AnyIO deprecation warning remains. The [unexpected-adapter-error fix](docs/06-unexpected-adapter-errors.md) records the failing regression, bounded recovery and strict per-player ordering.
+Validation ran on Windows using `.venv/Scripts/python.exe` and `npm.cmd`; Ubuntu/WSL equivalents are documented here. Linux execution has not been measured. **50 backend tests and 3 UI tests passed**, as did typecheck/build and formatting. npm audit reported zero vulnerabilities. One upstream Starlette/AnyIO deprecation warning remains. See the [unexpected-adapter-error fix](docs/06-unexpected-adapter-errors.md) for bounded recovery and strict per-player ordering, and the [workflow/replay fix](docs/07-workflow-replay-recovery.md) for safe switching and recovery from historical trapped replays.
 
 ## Reset and demo
 
@@ -139,7 +139,7 @@ Inspect the original without changing the checkout: `git show baseline-demo:back
 
 - **Port occupied:** use alternate ports above. Vite uses strict ports; do not stop unrelated processes.
 - **Proxy error:** check `curl http://127.0.0.1:8001/api/health` and `VITE_API_TARGET`; restart Vite after changing config.
-- **Activation returns 409:** stop servers and reset between comparisons. Unprocessed jobs also prevent workflow changes.
+- **Activation returns 409:** pending/failed/conflicting jobs prevent workflow changes. Process/retry/resolve them in Reliable sync. For a historical pending replay trapped in Manual CSV, review it and use `POST /api/sync/events/{id}/cancel-replay` with a reason; the API requires proof of prior delivery. See [recovery instructions](docs/07-workflow-replay-recovery.md). Misaligned rosters still require the existing clean comparison/reset procedure; recovery does not bypass alignment.
 - **Job failed:** inspect error/audit. The first two failures schedule retries after 2 and 4 seconds; after 3 attempts it stays failed. Correct the cause and use Retry. Clear simulated outages with `curl -X POST http://127.0.0.1:8001/api/sync/failure -H 'Content-Type: application/json' -d '{"attempts":0}'`.
 - **Conflict:** compare source snapshot and League record. Supply the missing team mapping or approve Club authority with a reason. Stale target revisions reject approval.
 - **Browser dependencies / ENOSPC:** use installed Chrome or install Playwright Chromium when space is available. The initial download failed here; the UI suite subsequently passed in Chrome.

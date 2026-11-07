@@ -119,3 +119,106 @@ test("reliable transfer, failure retry, replay and conflict review", async ({
     ),
   ).toBe(true);
 });
+
+test("workflow switching rejects invalid replay and recovers a legacy trapped replay", async ({
+  page,
+  request,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/");
+  await page.getByRole("button", { name: "02 Reliable sync" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "Reliable synchronization enabled",
+  );
+  await page.getByRole("button", { name: "Save transfer" }).click();
+  await expect(page.getByRole("status")).toContainText("Transfer saved");
+  await page.getByRole("button", { name: "Process queue" }).click();
+  await expect(page.getByRole("status")).toContainText("Due jobs processed");
+  const delivered = await (await request.get("/api/state")).json();
+  const eventId = delivered.sync.events[0].id;
+  await page.getByRole("button", { name: "01 Manual CSV" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "Manual CSV workflow selected",
+  );
+  const invalidReplay = await request.post(
+    `/api/sync/events/${eventId}/replay`,
+  );
+  expect(invalidReplay.status()).toBe(409);
+  expect((await invalidReplay.json()).detail).toContain(
+    "Replay requires Reliable sync",
+  );
+  expect(
+    (await (await request.get("/api/state")).json()).sync.events[0].status,
+  ).toBe("delivered");
+
+  await page.getByRole("button", { name: "02 Reliable sync" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "Reliable synchronization enabled",
+  );
+  await page.getByRole("button", { name: "Replay", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "Same event queued again",
+  );
+  await page.getByRole("button", { name: "01 Manual CSV" }).click();
+  await expect(page.getByRole("alert")).toContainText("Stay in Reliable sync");
+  await expect(
+    page.getByRole("button", { name: "02 Reliable sync" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Process queue" }).click();
+  await expect(page.getByRole("status")).toContainText("Due jobs processed");
+  await page.getByRole("button", { name: "01 Manual CSV" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "Manual CSV workflow selected",
+  );
+
+  // Test fixture only: emulate a committed replay from the old implementation.
+  // The corrected API above cannot produce this legacy state.
+  const root = resolve("..");
+  const python = resolve(
+    root,
+    ".venv",
+    process.platform === "win32" ? "Scripts/python.exe" : "bin/python",
+  );
+  execFileSync(
+    python,
+    [
+      "-c",
+      `from backend.db import transaction\nfrom backend.sync import audit\nwith transaction() as conn:\n conn.execute("UPDATE sync_events SET status='pending',next_attempt=0 WHERE id=?", (${eventId},))\n audit(conn, ${eventId}, 'replay_requested', 'Legacy CSV replay fixture')`,
+    ],
+    {
+      cwd: root,
+      env: { ...process.env, LEAGUE_DB: resolve(root, "data/ui-test.sqlite3") },
+    },
+  );
+  await page.getByRole("button", { name: "02 Reliable sync" }).click();
+  await expect(page.getByRole("alert")).toContainText(
+    `/sync/events/${eventId}/cancel-replay`,
+  );
+  const beforeRecovery = await (await request.get("/api/state")).json();
+  const recovery = await request.post(
+    `/api/sync/events/${eventId}/cancel-replay`,
+    {
+      data: {
+        reason:
+          "Reviewed the original delivery and cancelled only its legacy replay.",
+      },
+    },
+  );
+  expect(recovery.status()).toBe(200);
+  await page.getByRole("button", { name: "02 Reliable sync" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "Reliable synchronization enabled",
+  );
+  const after = await (await request.get("/api/state")).json();
+  expect(after.league_players).toEqual(beforeRecovery.league_players);
+  expect(after.league_players).toHaveLength(20);
+  expect(after.sync.events[0].status).toBe("delivered");
+  expect(
+    after.sync.audit.some(
+      (entry: { action: string }) => entry.action === "replay_cancelled",
+    ),
+  ).toBe(true);
+  expect(after.reconciliation.mismatch_count).toBe(0);
+  expect(errors).toEqual([]);
+});

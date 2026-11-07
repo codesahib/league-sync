@@ -19,6 +19,8 @@ This is **not distributed exactly-once delivery**. A real target cannot share th
 
 Activation adopts only an aligned copy. Team codes identify matching seed teams at cutover; subsequent explicit mappings permit differently coded teams. Ambiguous baseline data needs real migration cleanup. This demo uses reset between comparisons instead of unsafe duplicate deletion. Eligibility remains local even when membership is inactive; a joint participation policy is outside this synchronization slice.
 
+Replay requires Reliable sync, and outstanding work prevents leaving that mode. Historical replays already trapped in Manual CSV can be cancelled through an audited API operation only with proof of prior application; original deliveries cannot be discarded. See [workflow/replay recovery](07-workflow-replay-recovery.md). Recovery does not change mappings or bypass aligned-copy activation.
+
 Transfers stay inside a club. APIs never delete/recycle player identities. Cross-club moves, merges, deletion, bulk reconciliation repair and retention require business rules. Registration/team creation work; team renaming and whole-team migration are outside this narrow slice.
 
 ## Failure handling

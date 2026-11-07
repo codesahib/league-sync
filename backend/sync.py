@@ -41,8 +41,16 @@ def set_workflow(conn, mode):
     old = workflow(conn)
     if old == mode:
         return {"workflow": old}
-    if conn.execute("SELECT 1 FROM sync_events WHERE status!='delivered' LIMIT 1").fetchone():
-        raise HTTPException(409, "Resolve or deliver outstanding jobs before changing workflow")
+    outstanding = conn.execute("SELECT id,status FROM sync_events WHERE status!='delivered' ORDER BY id LIMIT 1").fetchone()
+    if outstanding:
+        if old == "baseline":
+            raise HTTPException(409,
+                f"Cannot activate Reliable sync: event #{outstanding['id']} is {outstanding['status']} in Manual CSV. "
+                f"For an already-applied pending replay, POST /api/sync/events/{outstanding['id']}/cancel-replay "
+                "with a reason, then retry activation. Other undelivered work requires investigation; do not delete it.")
+        raise HTTPException(409,
+            f"Cannot select Manual CSV: event #{outstanding['id']} is {outstanding['status']}. "
+            "Stay in Reliable sync to process pending jobs, retry failures or resolve conflicts before switching.")
     if mode == "reliable":
         if reconcile(conn)["mismatch_count"]:
             raise HTTPException(409, "Activation requires aligned rosters. Reset the demo between comparisons using scripts/reset-demo.sh")
@@ -156,11 +164,38 @@ def retry(conn, event_id):
 
 def replay(conn, event_id):
     event = require(conn, "sync_events", event_id)
+    if workflow(conn) != "reliable":
+        raise HTTPException(409,
+            "Replay requires Reliable sync. Select Reliable sync before replaying. "
+            f"If a legacy replay is pending in Manual CSV, POST /api/sync/events/{event_id}/cancel-replay with a reason.")
     if event["status"] != "delivered":
         raise HTTPException(409, "Only delivered events can be replayed; use retry or resolve otherwise")
     conn.execute("UPDATE sync_events SET status='pending',next_attempt=0 WHERE id=?", (event_id,))
     audit(conn, event_id, "replay_requested", "Same immutable event key; duplicate delivery simulation")
     return {"status": "pending", "event_key": event["event_key"]}
+
+
+def cancel_replay(conn, event_id, reason):
+    """Recover the old CSV-mode replay trap without executing or discarding source work."""
+    event = require(conn, "sync_events", event_id)
+    if workflow(conn) != "baseline":
+        raise HTTPException(409, "Replay cancellation is only for legacy pending replays in Manual CSV. In Reliable sync, process the queue.")
+    if event["status"] != "pending":
+        raise HTTPException(409, f"Event #{event_id} is {event['status']}; only a pending replay can be cancelled. No event was changed.")
+    mapping = conn.execute("SELECT * FROM identity_map WHERE source_id=?", (event["source_id"],)).fetchone()
+    replayed = conn.execute("SELECT 1 FROM sync_audit WHERE event_id=? AND action='replay_requested' LIMIT 1", (event_id,)).fetchone()
+    delivered = conn.execute("""SELECT 1 FROM sync_audit WHERE event_id=?
+        AND action IN ('applied','duplicate_or_old_version_ignored') LIMIT 1""", (event_id,)).fetchone()
+    if not mapping or mapping["last_version"] < event["version"] or not replayed or not delivered:
+        raise HTTPException(409,
+            f"Event #{event_id} is not a proven already-applied replay. "
+            "Investigate its delivery history and identity mapping; this recovery cannot skip an original delivery.")
+    conn.execute("""UPDATE sync_events SET status='delivered',next_attempt=0,last_error=NULL,
+        updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?""", (event_id,))
+    audit(conn, event_id, "replay_cancelled",
+          f"Operator cancelled a legacy replay in Manual CSV; original delivery and {event['attempts']} attempts retained. "
+          f"Mapped source version {mapping['last_version']} proves application. Reason: {reason}")
+    return {"status": "delivered", "event_key": event["event_key"], "cancelled_replay": True}
 
 
 def resolve(conn, event_id, expected_revision, reason):

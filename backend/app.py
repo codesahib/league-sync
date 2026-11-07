@@ -154,6 +154,10 @@ class Resolve(Input):
     reason: str = Field(min_length=8, max_length=240)
 
 
+class CancelReplay(Input):
+    reason: str = Field(min_length=8, max_length=240)
+
+
 class Mapping(Input):
     source_id: int = Field(gt=0)
     target_id: int = Field(gt=0)
@@ -199,6 +203,12 @@ def replay(event_id: int):
 def resolve(event_id: int, body: Resolve):
     with transaction() as conn:
         return sync.resolve(conn, event_id, body.expected_revision, body.reason)
+
+
+@app.post("/api/sync/events/{event_id}/cancel-replay")
+def cancel_replay(event_id: int, body: CancelReplay):
+    with transaction() as conn:
+        return sync.cancel_replay(conn, event_id, body.reason)
 
 
 @app.post("/api/sync/team-map")

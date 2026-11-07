@@ -54,8 +54,8 @@ Accepted delivery rate stayed **2/3**. The improvement did not remove the outage
 
 ## Quality checks and limitations
 
-- The initial evidence run passed **24 backend tests**. Following the [unexpected-adapter-error fix](06-unexpected-adapter-errors.md), the suite passes **30**, adding durable unexpected-failure isolation, bounded recovery and strict per-player ordering. Coverage retains automatic retry with the lifespan worker, injected errors before acknowledgement, transaction rollback, competing processors, old-version replay, conflict rejection and missing-team resolution.
-- **2 Playwright tests passed** in installed Chrome, covering real CSV upload and the improved workflow. Mobile width 390 has no document overflow. Screenshots: [baseline](../evidence/baseline.png), [improved](../evidence/improved.png), [failure](../evidence/failed-delivery.png), [mobile](../evidence/mobile.png).
+- The initial evidence run passed **24 backend tests**; the [unexpected-adapter-error fix](06-unexpected-adapter-errors.md) expanded that to **30**. The [workflow/replay fix](07-workflow-replay-recovery.md) adds 20 cases for **50 passing backend tests**, retaining bounded error recovery, strict per-player ordering, rollback, competing processors, replay and conflict coverage.
+- **3 Playwright tests passed** in installed Chrome, covering real CSV upload, the improved workflow and safe workflow/replay switching with legacy recovery. Mobile width 390 has no document overflow. Screenshots: [baseline](../evidence/baseline.png), [improved](../evidence/improved.png), [failure](../evidence/failed-delivery.png), [mobile](../evidence/mobile.png).
 - TypeScript/Vite build and formatting check passed; npm audit reported zero vulnerabilities. The initial older Vite advisory was corrected before baseline tagging.
 - One upstream Starlette/AnyIO deprecation warning remains. The Chromium download failed with ENOSPC; the UI gate subsequently passed in Chrome. No failed test is described as passing or skipped.
 - Small deterministic samples, no statistical confidence interval, load-test claim or published latency metric. Harness durations are not human effort saved.

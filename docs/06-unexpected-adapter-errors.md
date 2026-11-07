@@ -56,4 +56,4 @@ An exhausted event deliberately blocks subsequent versions for that player until
 
 The boundary catches adapter `Exception`, not process-control `BaseException`. Database/transaction failures outside the adapter boundary, failures while persisting the error, process termination and a broken savepoint cannot promise a durable failure record; the outer transaction rolls back and the worker's existing outer error logging remains. There is no new claim of remote exactly-once delivery or abrupt process-crash testing. Persistence tests reopen API/database connections to the committed SQLite file.
 
-The baseline-mode replay trap, benchmark labeling, migration support and conflict-review polling findings from the independent review are outside this fix and remain unaddressed.
+The baseline-mode replay trap was outside this fix and was subsequently addressed in the separate [workflow/replay fix](07-workflow-replay-recovery.md). Benchmark labeling, migration support and conflict-review polling remain outside both fixes.
