@@ -42,7 +42,7 @@ Review found that matching team codes alone is insufficient after an operator in
 
 `backend/db.py` adds `sync_settings`, `team_map`, `identity_map`, `sync_events` and `sync_audit`. `backend/app.py` enqueues Club writes, manages the worker, validates operations and blocks CSV imports during reliable mode. `backend/sync.py` handles snapshots, guards, retries and audit. `frontend/src/operations.tsx` exposes delivery outcomes and explicit decisions. Reset, benchmark and verification scripts make the operational workflow repeatable.
 
-The baseline had five backend tests and one browser test. The final suite has 24 backend tests and two browser tests; output is retained in `evidence/`. This describes coverage, not productivity. Development time, prompt count, model token usage and a human-only control group were not measured.
+The baseline had five backend tests and one browser test. The initial final suite had 24 backend tests and two browser tests. The [unexpected-adapter-error regression fix](06-unexpected-adapter-errors.md) expands backend coverage to 30 while retaining the two browser tests; current output is in `evidence/`. This describes coverage, not productivity. Development time, prompt count, model token usage and a human-only control group were not measured.
 
 ## Automation, AI contribution and human work
 

@@ -29,7 +29,7 @@ Both workflows receive fresh identical seeds, ten fixed transfers, delivery and 
 
 The action path is export, upload and inspect. It excludes navigation, file selection, source editing, one-time activation and discrepancy repair. It is not a human timing study. A separate transfer/outage/retry/replay probe accepted **2/3 deliveries in both workflows**. Improved sync converged and retained a durable failure audit; CSV retained one inconsistent player. Network failure itself did not improve.
 
-The final gate passed **24 backend tests, 2 browser tests, typecheck/build and formatting**. npm audit reported zero vulnerabilities. Tests cover replay, old versions, competing processors, rollback, background retry, missing mappings and stale authority approval. Screenshots and raw command outputs are retained. Validation ran on Windows; Ubuntu/WSL setup is documented but was not executed here.
+The initial final gate passed 24 backend tests. Following the [unexpected-adapter-error fix](../docs/06-unexpected-adapter-errors.md), the current gate passes **30 backend tests, 2 browser tests, typecheck/build and formatting**. npm audit reported zero vulnerabilities. Tests cover replay, old versions, competing processors, rollback, background retry, missing mappings, stale authority approval, unexpected-failure isolation and strict per-player ordering. Screenshots and raw command outputs are retained. Validation ran on Windows; Ubuntu/WSL setup is documented but was not executed here.
 
 ## Handoff and limits
 

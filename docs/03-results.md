@@ -54,7 +54,7 @@ Accepted delivery rate stayed **2/3**. The improvement did not remove the outage
 
 ## Quality checks and limitations
 
-- **24 backend tests passed**, including automatic retry with the lifespan worker, interruption before acknowledgement, transaction rollback, competing processors, old-version delivery, conflict rejection and missing-team resolution.
+- The initial evidence run passed **24 backend tests**. Following the [unexpected-adapter-error fix](06-unexpected-adapter-errors.md), the suite passes **30**, adding durable unexpected-failure isolation, bounded recovery and strict per-player ordering. Coverage retains automatic retry with the lifespan worker, injected errors before acknowledgement, transaction rollback, competing processors, old-version replay, conflict rejection and missing-team resolution.
 - **2 Playwright tests passed** in installed Chrome, covering real CSV upload and the improved workflow. Mobile width 390 has no document overflow. Screenshots: [baseline](../evidence/baseline.png), [improved](../evidence/improved.png), [failure](../evidence/failed-delivery.png), [mobile](../evidence/mobile.png).
 - TypeScript/Vite build and formatting check passed; npm audit reported zero vulnerabilities. The initial older Vite advisory was corrected before baseline tagging.
 - One upstream Starlette/AnyIO deprecation warning remains. The Chromium download failed with ENOSPC; the UI gate subsequently passed in Chrome. No failed test is described as passing or skipped.

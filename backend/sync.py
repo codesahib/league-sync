@@ -4,6 +4,7 @@ The simulated League adapter and delivery acknowledgement commit together.
 An actual remote adapter must expose equivalent idempotency at its boundary.
 """
 import json
+import logging
 import time
 from fastapi import HTTPException
 from .db import rows, transaction
@@ -95,35 +96,48 @@ def drain(limit=50):
         with transaction() as conn:
             if workflow(conn) != "reliable":
                 break
-            event = conn.execute("""SELECT * FROM sync_events WHERE
-                (status='pending' OR (status='failed' AND attempts<?)) AND next_attempt<=?
-                ORDER BY id LIMIT 1""", (MAX_AUTOMATIC_ATTEMPTS, time.time())).fetchone()
+            # A delayed, exhausted or conflicting predecessor blocks only its player.
+            # Keep version checks in deliver(): replayed, already-applied events remain no-ops.
+            event = conn.execute("""SELECT e.* FROM sync_events e WHERE
+                (e.status='pending' OR (e.status='failed' AND e.attempts<?))
+                AND e.next_attempt<=?
+                AND NOT EXISTS (
+                    SELECT 1 FROM sync_events earlier
+                    WHERE earlier.source_id=e.source_id AND earlier.version<e.version
+                    AND earlier.status!='delivered'
+                ) ORDER BY e.id LIMIT 1""", (MAX_AUTOMATIC_ATTEMPTS, time.time())).fetchone()
             if event is None:
                 break
             event = dict(event)
             attempt = event["attempts"] + 1
             summary["attempted"] += 1
+            budget = conn.execute("SELECT failure_budget FROM sync_settings WHERE id=1").fetchone()[0]
+            if budget:
+                conn.execute("UPDATE sync_settings SET failure_budget=failure_budget-1 WHERE id=1")
+            # Roll back all adapter effects on any ordinary exception, while retaining
+            # consumed fault simulation and durable failure metadata in the outer transaction.
+            conn.execute("SAVEPOINT delivery")
             try:
-                budget = conn.execute("SELECT failure_budget FROM sync_settings WHERE id=1").fetchone()[0]
                 if budget:
-                    conn.execute("UPDATE sync_settings SET failure_budget=failure_budget-1 WHERE id=1")
                     raise ConnectionError("Simulated League network outage; target was not changed")
-                # Savepoint makes any adapter rejection atomic while preserving the failure log.
-                conn.execute("SAVEPOINT delivery")
                 outcome = deliver(conn, event)
+            except Exception as exc:
+                conn.execute("ROLLBACK TO delivery")
                 conn.execute("RELEASE delivery")
-            except (ConnectionError, DeliveryConflict) as exc:
-                if isinstance(exc, DeliveryConflict):
-                    conn.execute("ROLLBACK TO delivery")
-                    conn.execute("RELEASE delivery")
-                status = "failed" if isinstance(exc, ConnectionError) else "conflict"
-                next_attempt = time.time() + 2 ** attempt if status == "failed" else 0
+                status = "conflict" if isinstance(exc, DeliveryConflict) else "failed"
+                known = isinstance(exc, (ConnectionError, DeliveryConflict))
+                error = str(exc) if known else f"{type(exc).__name__}: {exc}"
+                if not known:
+                    logging.exception("Unexpected adapter failure for event %s", event["event_key"])
+                next_attempt = (time.time() + 2 ** attempt
+                                if status == "failed" and attempt < MAX_AUTOMATIC_ATTEMPTS else 0)
                 conn.execute("""UPDATE sync_events SET status=?,attempts=?,next_attempt=?,last_error=?,
                     updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?""",
-                             (status, attempt, next_attempt, str(exc), event["id"]))
-                audit(conn, event["id"], status, f"Attempt {attempt}: {exc}")
+                             (status, attempt, next_attempt, error, event["id"]))
+                audit(conn, event["id"], status, f"Attempt {attempt}: {error}")
                 summary["failed" if status == "failed" else "conflicts"] += 1
             else:
+                conn.execute("RELEASE delivery")
                 conn.execute("""UPDATE sync_events SET status='delivered',attempts=?,last_error=NULL,
                     next_attempt=0,updated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE id=?""", (attempt, event["id"]))
                 audit(conn, event["id"], outcome, f"Attempt {attempt}; {event['event_key']}")

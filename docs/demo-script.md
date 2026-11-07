@@ -42,6 +42,6 @@ Register a new synthetic player to demonstrate creation of a mapped League ident
 
 Run `.venv/bin/python scripts/benchmark.py --mode both`; temporary databases keep the interactive demo unchanged. Show `evidence/comparison.json`: 10 → 0 mismatches, 30 → 20 target records, ten duplicate event deliveries ignored. Defined additional handoff actions: 3 → 0. Both modes accepted two of three deliveries in the outage probe; the claim is durable recovery and correct convergence.
 
-Show `docs/04-ai-engineering-process.md`: Codex inspected contracts, proposed mapping/queue design, implemented it and exercised edge cases. There is no runtime AI. The gate passes 24 backend and two browser tests. No human engineering-time savings or production impact was measured.
+Show `docs/04-ai-engineering-process.md`: Codex inspected contracts, proposed mapping/queue design, implemented it and exercised edge cases. There is no runtime AI. The gate passes 30 backend and two browser tests after the unexpected-adapter-error fix. No human engineering-time savings or production impact was measured.
 
 Finish with the maintainable scope: a small SQLite service and testable adapter. Remote idempotency, reviewed identity migration and real access controls remain future work. Reset afterward if a clean start is needed.

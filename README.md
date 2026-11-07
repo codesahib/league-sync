@@ -65,7 +65,7 @@ bash scripts/check.sh --browser-channel chrome
 
 The verifier records exit codes and returns nonzero on failure. `--skip-ui` explicitly reports a skipped UI test; it is not the full gate. Playwright owns ports **5183 / 8011** and resets **only `data/ui-test.sqlite3`** before each test. Benchmark databases are temporary files under this repository's `data/`; they do not alter the interactive demo. Tests generate PNG screenshots, JUnit XML and Playwright JSON in `evidence/`.
 
-Validation ran on Windows using `.venv/Scripts/python.exe` and `npm.cmd`; Ubuntu/WSL equivalents are documented here. Linux execution has not been measured. **24 backend tests and 2 UI tests passed**, as did typecheck/build and formatting. npm audit reported zero vulnerabilities. One upstream Starlette/AnyIO deprecation warning remains.
+Validation ran on Windows using `.venv/Scripts/python.exe` and `npm.cmd`; Ubuntu/WSL equivalents are documented here. Linux execution has not been measured. **30 backend tests and 2 UI tests passed**, as did typecheck/build and formatting. npm audit reported zero vulnerabilities. One upstream Starlette/AnyIO deprecation warning remains. The [unexpected-adapter-error fix](docs/06-unexpected-adapter-errors.md) records the failing regression, bounded recovery and strict per-player ordering.
 
 ## Reset and demo
 
