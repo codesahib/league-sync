@@ -79,7 +79,7 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 709,
+                  "duration": 766,
                   "errors": [],
                   "stdout": [],
                   "stderr": [
@@ -88,7 +88,7 @@
                     }
                   ],
                   "retry": 0,
-                  "startTime": "2026-11-07T04:46:25.219Z",
+                  "startTime": "2026-11-07T04:55:47.390Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -117,7 +117,7 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2028,
+                  "duration": 2295,
                   "errors": [],
                   "stdout": [],
                   "stderr": [
@@ -126,7 +126,7 @@
                     }
                   ],
                   "retry": 0,
-                  "startTime": "2026-11-07T04:46:26.072Z",
+                  "startTime": "2026-11-07T04:55:48.304Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -138,15 +138,56 @@
           "file": "smoke.spec.ts",
           "line": 44,
           "column": 1
+        },
+        {
+          "title": "workflow switching rejects invalid replay and recovers a legacy trapped replay",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1808,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [
+                    {
+                      "buffer": ""
+                    },
+                    {
+                      "buffer": ""
+                    }
+                  ],
+                  "retry": 0,
+                  "startTime": "2026-11-07T04:55:50.607Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "4219922fea2e2bd3c691-1b7c32229086557e0ce9",
+          "file": "smoke.spec.ts",
+          "line": 139,
+          "column": 1
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-11-07T04:46:23.282Z",
-    "duration": 5150.9130000000005,
-    "expected": 2,
+    "startTime": "2026-11-07T04:55:44.924Z",
+    "duration": 7869.466999999999,
+    "expected": 3,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

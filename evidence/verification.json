@@ -1,20 +1,20 @@
 {
-  "started_at_utc": "2026-11-07T04:46:12.159201+00:00",
+  "started_at_utc": "2026-11-07T04:55:31.932039+00:00",
   "completed": true,
   "platform": "Windows",
   "python": "3.13.14",
-  "source_commit": "2ed281bd650ffe4d9c14fed767cdbeb970d4de2b",
+  "source_commit": "8c696b76fec098016083f863aff98ed7baefbc77",
   "ui": "chrome",
   "checks": [
     {
       "command": "<repo>\\.venv\\Scripts\\python.exe -m pytest backend/tests -q --junitxml=evidence/backend-tests.xml",
       "exit_code": 0,
-      "output": "..............................                                           [100%]\n============================== warnings summary ===============================\n.venv\\Lib\\site-packages\\starlette\\testclient.py:51\n  <repo>\\.venv\\Lib\\site-packages\\starlette\\testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.\n    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n- generated xml file: <repo>\\evidence\\backend-tests.xml -\n30 passed, 1 warning in 4.37s\n"
+      "output": "..................................................                       [100%]\n============================== warnings summary ===============================\n.venv\\Lib\\site-packages\\starlette\\testclient.py:51\n  <repo>\\.venv\\Lib\\site-packages\\starlette\\testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.\n    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n- generated xml file: <repo>\\evidence\\backend-tests.xml -\n50 passed, 1 warning in 6.01s\n"
     },
     {
       "command": "\"C:\\Program Files\\nodejs\\npm.cmd\" --prefix frontend run build",
       "exit_code": 0,
-      "output": "\n> league-sync-lab@1.0.0 build\n> tsc -b && vite build\n\nvite v7.3.7 building client environment for production...\ntransforming...\n\u2713 1677 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   0.47 kB \u2502 gzip:  0.30 kB\ndist/assets/index-ooIfVOeP.css   11.02 kB \u2502 gzip:  3.19 kB\ndist/assets/index-CdKvyBcq.js   217.25 kB \u2502 gzip: 68.11 kB\n\u2713 built in 1.37s\n"
+      "output": "\n> league-sync-lab@1.0.0 build\n> tsc -b && vite build\n\nvite v7.3.7 building client environment for production...\ntransforming...\n\u2713 1677 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                   0.47 kB \u2502 gzip:  0.30 kB\ndist/assets/index-ooIfVOeP.css   11.02 kB \u2502 gzip:  3.19 kB\ndist/assets/index-CdKvyBcq.js   217.25 kB \u2502 gzip: 68.11 kB\n\u2713 built in 1.43s\n"
     },
     {
       "command": "\"C:\\Program Files\\nodejs\\npm.cmd\" --prefix frontend run format:check",
@@ -34,7 +34,7 @@
     {
       "command": "\"C:\\Program Files\\nodejs\\npm.cmd\" --prefix frontend run test:ui",
       "exit_code": 0,
-      "output": "\n> league-sync-lab@1.0.0 test:ui\n> playwright test\n\n\u001b[2m[WebServer] \u001b[22mINFO:     Started server process [22976]\n\u001b[2m[WebServer] \u001b[22mINFO:     Waiting for application startup.\n\u001b[2m[WebServer] \u001b[22mINFO:     Application startup complete.\n\u001b[2m[WebServer] \u001b[22mINFO:     Uvicorn running on http://127.0.0.1:8011 (Press CTRL+C to quit)\n\u001b[2m[WebServer] \u001b[22m(node:35876) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n\u001b[2m[WebServer] \u001b[22m(Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 2 tests using 1 worker\n\n(node:41968) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:41968) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n  ok 1 tests\\smoke.spec.ts:15:1 \u203a baseline CSV handoff exposes a stale transfer (709ms)\n\n  ok 2 tests\\smoke.spec.ts:44:1 \u203a reliable transfer, failure retry, replay and conflict review (2.0s)\n\n  2 passed (5.2s)\n"
+      "output": "\n> league-sync-lab@1.0.0 test:ui\n> playwright test\n\n\u001b[2m[WebServer] \u001b[22mINFO:     Started server process [19372]\n\u001b[2m[WebServer] \u001b[22mINFO:     Waiting for application startup.\n\u001b[2m[WebServer] \u001b[22mINFO:     Application startup complete.\n\u001b[2m[WebServer] \u001b[22mINFO:     Uvicorn running on http://127.0.0.1:8011 (Press CTRL+C to quit)\n\u001b[2m[WebServer] \u001b[22m(node:41636) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n\u001b[2m[WebServer] \u001b[22m(Use `node --trace-warnings ...` to show where the warning was created)\n\nRunning 3 tests using 1 worker\n\n(node:38892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:38892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n  ok 1 tests\\smoke.spec.ts:15:1 \u203a baseline CSV handoff exposes a stale transfer (766ms)\n\n  ok 2 tests\\smoke.spec.ts:44:1 \u203a reliable transfer, failure retry, replay and conflict review (2.3s)\n\n  ok 3 tests\\smoke.spec.ts:139:1 \u203a workflow switching rejects invalid replay and recovers a legacy trapped replay (1.8s)\n\n  3 passed (7.9s)\n"
     }
   ],
   "exit_code": 0
