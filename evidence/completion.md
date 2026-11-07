@@ -1,5 +1,7 @@
 # Completion record
 
+This records the original project delivery. The later adapter-failure fix and its current verification are recorded in `unexpected-errors-verification.md`; `verification.json` and the generated test reports now describe that newer code.
+
 All six checks in `verification.json` completed with exit code 0 against source commit `1979a30cd0f6f8897316103b0a0c2748f8099b84`. The subsequent evidence commit changes artifacts only.
 
 ## Commands actually executed
