@@ -31,8 +31,10 @@ def import_csv(conn, content):
             if count >= 1000:
                 raise HTTPException(422, "CSV limit is 1000 rows")
             ref, code, name, membership = (row.get(k) for k in reader.fieldnames)
-            if (not ref or not ref.isdecimal() or len(ref) > 10 or not name or
-                    len(name) > 80 or membership not in ("active", "inactive")):
+            if (None in row or not ref or not ref.isascii() or not ref.isdecimal()
+                    or len(ref) > 10 or int(ref) < 1 or str(int(ref)) != ref
+                    or not name or not name.strip() or len(name) > 80
+                    or membership not in ("active", "inactive")):
                 raise HTTPException(422, f"Invalid CSV row {count + 2}")
             team = conn.execute("SELECT id FROM league_teams WHERE code=?", (code,)).fetchone()
             if not team:
@@ -52,6 +54,8 @@ def reconcile(conn):
     club = rows(conn, "SELECT p.*,t.code FROM club_players p JOIN club_teams t ON p.team_id=t.id ORDER BY p.id")
     league = rows(conn, "SELECT p.*,t.code FROM league_players p JOIN league_teams t ON p.team_id=t.id ORDER BY p.id")
     source_refs = {str(p["id"]) for p in club}
+    reliable = conn.execute("SELECT workflow FROM sync_settings WHERE id=1").fetchone()[0] == "reliable"
+    team_map = {r["source_id"]: r["target_id"] for r in conn.execute("SELECT * FROM team_map")} if reliable else {}
     for p in club:
         matches = [r for r in league if r["source_ref"] == str(p["id"])]
         reasons = []
@@ -59,7 +63,8 @@ def reconcile(conn):
             reasons.append("missing")
         if len(matches) > 1:
             reasons.append("duplicate")
-        if any(r["code"] != p["code"] or r["name"] != p["name"] or r["membership"] != p["membership"] for r in matches):
+        if any((r["team_id"] != team_map.get(p["team_id"]) if reliable else r["code"] != p["code"])
+               or r["name"] != p["name"] or r["membership"] != p["membership"] for r in matches):
             reasons.append("stale_fields")
         if reasons:
             issues.append({"source_id": p["id"], "name": p["name"], "reasons": reasons,

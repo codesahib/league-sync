@@ -49,6 +49,31 @@ CREATE TABLE IF NOT EXISTS league_players(
  membership TEXT NOT NULL CHECK(membership IN ('active','inactive')),
  eligible INTEGER NOT NULL DEFAULT 1 CHECK(eligible IN (0,1)),
  revision INTEGER NOT NULL DEFAULT 1, UNIQUE(source_ref,team_id));
+CREATE TABLE IF NOT EXISTS sync_settings(
+ id INTEGER PRIMARY KEY CHECK(id=1), workflow TEXT NOT NULL CHECK(workflow IN ('baseline','reliable')),
+ failure_budget INTEGER NOT NULL DEFAULT 0 CHECK(failure_budget>=0));
+INSERT OR IGNORE INTO sync_settings(id,workflow) VALUES(1,'baseline');
+CREATE TABLE IF NOT EXISTS team_map(
+ source_id INTEGER PRIMARY KEY REFERENCES club_teams(id),
+ target_id INTEGER NOT NULL UNIQUE REFERENCES league_teams(id));
+CREATE TABLE IF NOT EXISTS identity_map(
+ source_id INTEGER PRIMARY KEY REFERENCES club_players(id),
+ target_id INTEGER NOT NULL UNIQUE REFERENCES league_players(id),
+ last_version INTEGER NOT NULL, expected_revision INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS sync_events(
+ id INTEGER PRIMARY KEY AUTOINCREMENT, event_key TEXT NOT NULL UNIQUE,
+ source_id INTEGER NOT NULL REFERENCES club_players(id), version INTEGER NOT NULL,
+ payload TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending'
+ CHECK(status IN ('pending','delivered','failed','conflict')),
+ attempts INTEGER NOT NULL DEFAULT 0, next_attempt REAL NOT NULL DEFAULT 0,
+ last_error TEXT, created_at TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+ updated_at TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+ UNIQUE(source_id,version));
+CREATE INDEX IF NOT EXISTS events_due ON sync_events(status,next_attempt,id);
+CREATE TABLE IF NOT EXISTS sync_audit(
+ id INTEGER PRIMARY KEY AUTOINCREMENT, event_id INTEGER REFERENCES sync_events(id),
+ action TEXT NOT NULL, detail TEXT NOT NULL,
+ created_at TEXT NOT NULL DEFAULT(strftime('%Y-%m-%dT%H:%M:%fZ','now')));
 """
 
 

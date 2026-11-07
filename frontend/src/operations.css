@@ -1,0 +1,154 @@
+.delivery-path {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 18px 14px;
+  background: #f2f6f0;
+  border: 1px solid #e0e8dc;
+  border-radius: 6px;
+  color: #6c876c;
+  font-size: 11px;
+}
+.delivery-path span {
+  background: white;
+  border: 1px solid #dde7d8;
+  padding: 10px 13px;
+  border-radius: 4px;
+  color: #3e6948;
+}
+.cutover-note,
+.help {
+  font-size: 10px;
+  color: #82917b;
+  line-height: 1.8;
+  margin-top: 16px;
+}
+.queue-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.queue-toolbar > span {
+  margin-left: auto;
+  font-size: 10px;
+  color: #9a8a67;
+}
+.queue-toolbar button {
+  font-size: 10px;
+}
+.events-table {
+  margin-top: 20px;
+}
+.events-table td {
+  vertical-align: top;
+  font-size: 10px;
+}
+.events-table td:first-child span {
+  font-size: 8px;
+  color: #91a088;
+}
+.events-table .event-detail {
+  white-space: normal;
+  line-height: 1.8;
+  min-width: 230px;
+  max-width: 430px;
+}
+.event-detail small {
+  display: block;
+  color: #b28744;
+  font-size: 9px;
+  margin-top: 5px;
+}
+.event-detail details {
+  min-width: 250px;
+}
+.event-detail p {
+  margin-top: 8px;
+}
+.event-detail button {
+  margin-top: 10px;
+}
+.compact {
+  padding: 6px 10px;
+  font-size: 9px;
+}
+.audit-details summary {
+  font-size: 11px;
+}
+.audit-list {
+  max-height: 280px;
+  overflow: auto;
+  margin-top: 14px;
+}
+.audit-entry {
+  display: grid;
+  grid-template-columns: 155px 145px 1fr;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid #eef1e8;
+  font-size: 10px;
+  color: #7c8e72;
+  line-height: 1.7;
+}
+.audit-time {
+  font-family: monospace;
+  font-size: 9px;
+  color: #9cab8e;
+}
+.audit-action {
+  font-weight: 600;
+  color: #54794f;
+}
+.team-management {
+  padding-top: 20px;
+}
+.team-management h3 {
+  margin-bottom: 12px;
+}
+.team-fields {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: end;
+}
+.team-fields label {
+  flex: 1;
+  min-width: 100px;
+}
+.team-management form + form {
+  margin-top: 25px;
+}
+.mapping-list {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.mapping-list span {
+  font-size: 9px;
+  color: #80946f;
+  background: #f3f7ed;
+  padding: 6px 9px;
+  border-radius: 3px;
+}
+@media (max-width: 760px) {
+  .audit-entry {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .queue-toolbar > span {
+    width: 100%;
+    margin: 0;
+  }
+  .delivery-path {
+    padding: 13px 10px;
+  }
+  .delivery-path span {
+    padding: 9px;
+  }
+  .team-fields label {
+    min-width: 120px;
+  }
+}

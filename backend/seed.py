@@ -5,9 +5,10 @@ from .db import initialize, transaction
 def seed():
     initialize()
     with transaction() as conn:
-        for table in ("league_players", "club_players", "league_teams", "club_teams", "clubs"):
+        for table in ("sync_audit", "sync_events", "identity_map", "team_map", "league_players", "club_players", "league_teams", "club_teams", "clubs"):
             conn.execute(f"DELETE FROM {table}")
         conn.execute("DELETE FROM sqlite_sequence")
+        conn.execute("UPDATE sync_settings SET workflow='baseline',failure_budget=0 WHERE id=1")
         conn.executemany("INSERT INTO clubs VALUES (?,?)", [(1, "Cedar Club"), (2, "Harbor Club")])
         teams = [(1, 1, "Cedar North", "CN"), (2, 1, "Cedar South", "CS"),
                  (3, 2, "Harbor East", "HE"), (4, 2, "Harbor West", "HW")]

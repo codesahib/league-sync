@@ -38,3 +38,10 @@ def test_validation_and_missing_records(client):
     assert client.post("/api/club/players/1/transfer", json={"team_id": 3}).status_code == 422
     assert client.post("/api/club/players/999/transfer", json={"team_id": 2}).status_code == 404
     assert client.post("/api/club/players", json={"name": "  ", "team_id": 1}).status_code == 422
+
+
+def test_csv_rejects_blank_names_and_extra_columns(client):
+    for row in ["99,CN,   ,active", "99,CN,Synthetic Extra,active,unexpected", "01,CN,Synthetic Alias,active"]:
+        csv = f"source_ref,team_code,name,membership\n{row}\n"
+        assert client.post("/api/baseline/import", json={"csv": csv}).status_code == 422
+    assert len(client.get("/api/state").json()["league_players"]) == 20
